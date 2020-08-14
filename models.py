@@ -82,3 +82,8 @@ if __name__=="__main__":
     print("output:")
     print(out)
 '''
+    test = Variable(torch.randn(4,4,4).type(dtype), requires_grad=False)
+    print(test)
+    for i in range(4):
+        test[i] = test[i].unfold(0, patch_size, 1).unfold(1, patch_size, 1)
+    print(test)
