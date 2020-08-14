@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as f
 from torch.autograd import Variable
-
+'''
 class DnCNN(nn.Module):
     def __init__(self, channels=1, num_of_layers=9, kernel_size=3, o_k_size=5):
         super(DnCNN, self).__init__()
@@ -61,7 +61,7 @@ class PatchLoss(nn.Module):
             avg_loss+=max_patch_loss
         avg_loss/=len(output)
         return avg_loss
-
+'''
 if __name__=="__main__":
 
     criterion = PatchLoss()
