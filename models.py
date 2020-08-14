@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as f
 from torch.autograd import Variable
-'''
+
 class DnCNN(nn.Module):
     def __init__(self, channels=1, num_of_layers=9, kernel_size=3, o_k_size=5):
         super(DnCNN, self).__init__()
@@ -29,16 +29,17 @@ class DnCNN(nn.Module):
         batch_size = list(data.size())[0]
         img_size = list(data.size())[1] # size of the input image
         output = torch.zeros(batch_size, img_size, img_size)
+        
         neighborhood = #slicing
+        
+        
         for i in range(batch_size):
             for j in rang(img_size):
                 for k in range(img_size):
                     data[i][j][k] = o_kernel*data[i][j][k]
-                    sum_elem = data[i][j][k].flatten()
+                    output[i][j][k] = torch.sum(data[i][j][k])
         
-        
-        
-        return out
+        return output
 
 
 
@@ -61,29 +62,14 @@ class PatchLoss(nn.Module):
             avg_loss+=max_patch_loss
         avg_loss/=len(output)
         return avg_loss
-'''
-if __name__=="__main__":
 
-    criterion = PatchLoss()
+if __name__=="__main__":
+    #criterion = PatchLoss()
+    patch_size = 2
     dtype = torch.FloatTensor
-'''
-    x = Variable(torch.randn(100, 100).type(dtype), requires_grad=False)
-    y = Variable(torch.randn(100, 100).type(dtype), requires_grad=False)
-    
-    loss = criterion(x, y, 10)
-    
-    
-    net = DnCNN()
-    input = torch.randn(1, 1, 32, 32)
-    print("input:")
-    print(input)
-    
-    out = net(input)
-    print("output:")
-    print(out)
-'''
     test = Variable(torch.randn(4,4,4).type(dtype), requires_grad=False)
     print(test)
     for i in range(4):
         test[i] = test[i].unfold(0, patch_size, 1).unfold(1, patch_size, 1)
     print(test)
+    
