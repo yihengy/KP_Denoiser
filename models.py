@@ -32,16 +32,12 @@ def reshape(data,ker_size=5):
                             m += 1
     return reshape_data
     
-
-def compute_output(data, kernel, ker_size):
-    # data = N*in_channel*x*y
-    # kernel = N*out_channel*x*y, out_channel=in_ch*k**2
-    # transform kernel into N*input_channel*x*y*(k*k), and then do a simple matrix scalar product
-    N = (list(data.size()))[0]
-    in_ch = (list(data.size()))[1]
-    x = (list(data.size()))[2]
-    y = (list(data.size()))[3]
-    o_ch = (list(kernel.size()))[1] // in_ch
+def reshape_output(kernel, ker_size=5):
+    N = (list(kernel.size()))[0]
+    in_ch = (list(kernel.size()))[1] // (ker_size**2)
+    x = (list(kernel.size()))[2]
+    y = (list(kernel.size()))[3]
+    o_ch = (list(kernel.size()))[1]
     
     reshape_kernel = torch.zeros(N, in_ch, x, y, o_ch)
     for i in range(N):
@@ -61,9 +57,21 @@ def compute_output(data, kernel, ker_size):
                     for e in range(o_ch):
                         sum += reshape_kernel[a][b][c][d][e]
                         reshape_kernel[a][b][c][d] /= sum
-    
+    return reshape_kernel
+
+
+def compute_output(data, kernel, ker_size=5):
+    # data = N*in_channel*x*y
+    # kernel = N*out_channel*x*y, out_channel=in_ch*k**2
+    # transform kernel into N*input_channel*x*y*(k*k), and then do a simple matrix scalar product
     reshape_data = reshape(data, ker_size)
+    reshape_kernel = reshape_output(kernel, ker_size)
     
+    N = (list(data.size()))[0]
+    in_ch = (list(data.size()))[1]
+    x = (list(data.size()))[2]
+    y = (list(data.size()))[3]
+    o_ch = (list(kernel.size()))[1] // in_ch
     scalar_product = torch.mul(reshape_kernel, reshape_data)
     
     result = torch.zeros(N, in_ch, x, y)
@@ -71,75 +79,20 @@ def compute_output(data, kernel, ker_size):
     for o in range(N):
         for p in range(in_ch):
             for q in range(x):
-                for r
+                for r in range(y):
+                    sum = 0
+                    for s in range(o_ch):
+                        sum += scalar_product[o][p][q][r][s]
+                    result[o][p][q][r] = sum
+                        
+    #print(result.size())
+    return result
     
-    
-    
-                    
-    
-    
-    
-    
-                    
-
-    
-    
-
-'''
-def predict_output(data, kernel)
-    # data = N*in_channel*x*y
-    # kernel = N*out_channel*x*y
-    
-    # produce an output tensor with the same size as the input data
-    data_size = list(data.size())
-    output = torch.zeros(data_size)
-    
-    # ker_size = k*k
-    ker_size = (list(kernel.size())[1]
-    # batch_size N
-    N = (list(data.size()))[0]
-    in_channel = (list(data.size()))[1]
-    # spacial dim
-    length = (list(data.size()))[2]
-    width = (list(data.size()))[3]
-    
-    # a HUGE tensor to do the computation
-    compute_size = data_size.append(ker_size)
-    compute_tensor = torch.zeros(compute_size)
-    
-    # put kernel into tensor with size N*x*y*out_channel
-    for i in range(N):
-        for j in range(length):
-            for k in range(width):
-                for l in range(ker_size):
-                    compute_tensor[i][j][k][l] = kernel[l][i][j][k].clone()
-                    
-    # Normalize
-    for i in range(N):
-        for j in range(length):
-            for k in range(width):
-                for l in range(ker_size):
-                    np_compute_tensor = compute_tensor.numpy()
-                    devider = np.sum(np_compute_tensor[i][j][k])
-                    compute_tensor[i][j][k][l] /= devider
-    '''
-    
-    
-    # reshaping the data
-
-
-    
-    
-    
-    
-
 class DnCNN(nn.Module):
-    def __init__(self, channels=1, num_of_layers=9, kernel_size=3, o_k_size=3):
+    def __init__(self, channels=1, num_of_layers=9, kernel_size=3, o_k_size=5):
         super(DnCNN, self).__init__()
-        #padding = (kernel_size-1)/2
-        padding = 1
+        padding = (kernel_size-1)//2
         o_channels = o_k_size**2
-        o_padding = (o_k_size-1)/2
         features = 150
         
         layers = []
@@ -154,9 +107,16 @@ class DnCNN(nn.Module):
         layers.append(nn.Conv2d(in_channels=features, out_channels=o_channels, kernel_size=kernel_size, padding=padding, bias=False))
         
         self.dncnn = nn.Sequential(*layers)
+        
     def forward(self, data):
+    
         o_kernel = self.dncnn(data)
-        return o_kernel
+        
+        o_ker_size = (list(o_kernel.size()))[1]
+        
+        result = compute_output(data, o_kernel, o_ker_size)
+        
+        return result
 
 
 class PatchLoss(nn.Module):
@@ -185,18 +145,14 @@ if __name__=="__main__":
     y = Variable(torch.randn(100, 100).type(dtype), requires_grad=False)
     loss = criterion(x, y, 10)
     
-    net = DnCNN()
-    input = torch.randn(10, 1, 16, 16)
-    out = net(input)
-    #print(out.size())
+    input = torch.randn(10, 25, 16, 16)
+    reshape_output(input, 5)
     
-    input = torch.randn(2, 1, 4, 4)
-    kernel = torch.randn(2, 4, 4, 4)
-    print(kernel)
-    output = compute_output(input, kernel)
-    print(output.size())
-    print(output)
+    data = torch.randn(10, 1, 16, 16)
+    reshape(data,5)
     
+    t = compute_output(data, input, 5)
+    print(t.size())
     
 '''
 NOTE
