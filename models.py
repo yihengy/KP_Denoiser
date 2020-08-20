@@ -89,33 +89,28 @@ def compute_output(data, kernel, ker_size=5):
     return result
     
 class DnCNN(nn.Module):
-    def __init__(self, channels=1, num_of_layers=9, kernel_size=3, o_k_size=5):
+    def __init__(self, channels=1, num_of_layers=9, ker_size=3, o_k_size=5):
         super(DnCNN, self).__init__()
-        padding = (kernel_size-1)//2
+        padding = (ker_size-1)//2
         o_channels = o_k_size**2
         features = 150
         
         layers = []
         
-        layers.append(nn.Conv2d(in_channels=channels, out_channels=features, kernel_size=kernel_size, padding=padding, bias=False))
+        layers.append(nn.Conv2d(in_channels=channels, out_channels=features, kernel_size=ker_size, padding=padding, bias=False))
         layers.append(nn.ReLU(inplace=True))
         
         for _ in range(num_of_layers-2):
-            layers.append(nn.Conv2d(in_channels=features, out_channels=features, kernel_size=kernel_size, padding=padding, bias=False))
+            layers.append(nn.Conv2d(in_channels=features, out_channels=features, kernel_size=ker_size, padding=padding, bias=False))
             layers.append(nn.ReLU(inplace=True))
             
-        layers.append(nn.Conv2d(in_channels=features, out_channels=o_channels, kernel_size=kernel_size, padding=padding, bias=False))
+        layers.append(nn.Conv2d(in_channels=features, out_channels=o_channels, kernel_size=ker_size, padding=padding, bias=False))
         
         self.dncnn = nn.Sequential(*layers)
         
-    def forward(self, data):
-    
+    def forward(self, data, o_k_size=5):
         o_kernel = self.dncnn(data)
-        
-        o_ker_size = (list(o_kernel.size()))[1]
-        
-        result = compute_output(data, o_kernel, o_ker_size)
-        
+        result = compute_output(data, o_kernel, o_k_size)
         return result
 
 
@@ -153,6 +148,12 @@ if __name__=="__main__":
     
     t = compute_output(data, input, 5)
     print(t.size())
+    
+    net = DnCNN()
+    shit = torch.randn(10, 1, 8, 8)
+    shithole = net(shit, o_k_size=5)
+    print(shithole.size())
+    
     
 '''
 NOTE
