@@ -135,10 +135,11 @@ class PatchLoss(nn.Module):
 if __name__=="__main__":
     criterion = PatchLoss()
     dtype = torch.FloatTensor
-    
     x = Variable(torch.randn(100, 100).type(dtype), requires_grad=False)
     y = Variable(torch.randn(100, 100).type(dtype), requires_grad=False)
     loss = criterion(x, y, 10)
+    test = torch.rand(10,1,5,5).unfold(2,3,1).unfold(3,3,1)
+    print(test.size())
 '''
     input = torch.randn(10, 25, 16, 16)
     reshape_output(input, 5)
@@ -154,9 +155,6 @@ if __name__=="__main__":
     shithole = net(shit, o_k_size=5)
     print(shithole.size())
 '''
-    test = torch.rand(10,1,5,5).unfold(2,3,1).unfold(3,3,1)
-    print(test.size())
-
 
 
 
