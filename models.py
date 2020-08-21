@@ -139,7 +139,7 @@ if __name__=="__main__":
     x = Variable(torch.randn(100, 100).type(dtype), requires_grad=False)
     y = Variable(torch.randn(100, 100).type(dtype), requires_grad=False)
     loss = criterion(x, y, 10)
-    
+'''
     input = torch.randn(10, 25, 16, 16)
     reshape_output(input, 5)
     
@@ -153,8 +153,14 @@ if __name__=="__main__":
     shit = torch.randn(10, 1, 8, 8)
     shithole = net(shit, o_k_size=5)
     print(shithole.size())
-    
-    
+'''
+    test = torch.rand(10,1,5,5).unfold(2,3,1).unfold(3,3,1)
+    print(test.size())
+
+
+
+
+
 '''
 NOTE
 Example: input: torch.Size([10, 1, 16, 16]), batchsize=10, 1 channel, image size 16*16
