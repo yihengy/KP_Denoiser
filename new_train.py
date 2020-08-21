@@ -5,7 +5,7 @@ import torch
 import torch.nn as nn
 from torch.autograd import Variable
 from torch.nn import functional as f
-from models import DnCNN, PatchLoss
+from new_models import DnCNN, PatchLoss
 from dataset import *
 import glob
 import torch.optim as optim
