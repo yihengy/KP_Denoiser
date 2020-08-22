@@ -86,7 +86,42 @@ def compute_output(data, kernel, ker_size=5):
                     result[o][p][q][r] = sum
     #print(result.size())
     return result
+
+def calcOutput(data, kernel, ker_size=5):
+    pad = (ker_size-1)//2
+    ZeroPad = nn.ZeroPad2d(padding=(pad, pad, pad, pad))
+    data_pad = ZeroPad(data)
     
+    N = (list(data.size()))[0]
+    in_ch = (list(data.size()))[1]
+    x = (list(data.size()))[2]
+    y = (list(data.size()))[3]
+
+    pad = (ker_size-1)//2
+    ZeroPad = nn.ZeroPad2d(padding=(pad, pad, pad, pad))
+    data_pad = ZeroPad(data)
+    reshape_data = data_pad.unfold(2,ker_size,1).unfold(3,ker_size,1)
+    
+    flatten_kernel = torch.flatten(kernel)
+    
+    soft_max = nn.Softmax2d()
+    
+    reshape_kernel = flatten_kernel.reshape(N, in_ch, x, y, ker_size, ker_size)
+    for a in range(N):
+        for b in range(in_ch):
+            soft_max(reshape_kernel[a][b])
+    scalar_product = torch.mul(reshape_data, reshape_kernel)
+    
+    result = torch.zeros(N, in_ch, x, y)
+    
+    for o in range(N):
+        for p in range(in_ch):
+            for q in range(x):
+                for r in range(y):
+                    result[o][p][q][r] = torch.sum(scalar_product[o][p][q][r])
+                    
+    return result
+
 class DnCNN(nn.Module):
     def __init__(self, channels=1, num_of_layers=9, ker_size=3, o_k_size=5):
         super(DnCNN, self).__init__()
@@ -116,7 +151,7 @@ class PatchLoss(nn.Module):
         super(PatchLoss, self).__init__(size_average, reduce, reduction)
 
     def forward(self, kernel, noisy, target, o_ker_size, patch_size):
-        output = compute_output(noisy, kernel, o_ker_size).squeeze(1)
+        output = calcOutput(noisy, kernel, o_ker_size).squeeze(1)
         avg_loss = 0
         for i in range(len(output)):
             output_patches = output[i].unfold(0, patch_size, patch_size).unfold(1, patch_size, patch_size)
