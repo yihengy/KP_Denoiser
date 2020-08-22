@@ -84,12 +84,14 @@ def calcOutput(data, kernel, ker_size=5):
     
     flatten_kernel = torch.flatten(kernel)
     
+    soft_max = nn.Softmax(dim=None)
+    
     reshape_kernel = flatten_kernel.reshape(N, in_ch, x, y, ker_size, ker_size)
     for a in range(N):
         for b in range(in_ch):
             for c in range(x):
                 for d in range(y):
-                    reshape_kernel[a][b][c][d]/=torch.sum(reshape_kernel[a][b][c][d])
+                    soft_max(reshape_kernel[a][b][c][d])
     scalar_product = torch.mul(reshape_data, reshape_kernel)
     
     result = torch.zeros(N, in_ch, x, y)
