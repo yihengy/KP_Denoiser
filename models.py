@@ -186,6 +186,12 @@ if __name__=="__main__":
     loss = criterion(x, y, 10)
     test = torch.rand(10,1,5,5).unfold(2,3,1).unfold(3,3,1)
     print(test.size())
+    
+    data = torch.rand(10, 1, 16, 16)
+    kernel = torch.rand(10, 25, 16, 16)
+    result = calcOutput(data, kernel, 5)
+    print(result.size())
+    
 '''
     input = torch.randn(10, 25, 16, 16)
     reshape_output(input, 5)
