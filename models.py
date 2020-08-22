@@ -81,8 +81,11 @@ def calcOutput(data, kernel, ker_size=5):
     ZeroPad = nn.ZeroPad2d(padding=(pad, pad, pad, pad))
     data_pad = ZeroPad(data)
     reshape_data = data_pad.unfold(2,ker_size,1).unfold(3,ker_size,1)
+    print("reshape_data:")
+    print(reshape_data.size())
     
     flatten_kernel = torch.flatten(kernel)
+    print(flatten_kernel.size())
     
     reshape_kernel = flatten_kernel.reshape(N, in_ch, x, y, ker_size, ker_size)
     
@@ -91,7 +94,7 @@ def calcOutput(data, kernel, ker_size=5):
             for c in range(x):
                 for d in range(y):
                     reshape_kernel[a][b][c][d]/=torch.sum(reshape_kernel[a][b][c][d])
-    
+    print(reshape_kernel.size())
     scalar_product = torch.mul(flatten_kernel, reshape_kernel)
     
     result = torch.zeros(N, in_ch, x, y)
