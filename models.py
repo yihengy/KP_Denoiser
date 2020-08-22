@@ -84,7 +84,7 @@ def calcOutput(data, kernel, ker_size=5):
     
     flatten_kernel = torch.flatten(kernel)
     
-    soft_max = nn.Softmax2d
+    soft_max = nn.Softmax2d()
     
     reshape_kernel = flatten_kernel.reshape(N, in_ch, x, y, ker_size, ker_size)
     for a in range(N):
