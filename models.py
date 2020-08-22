@@ -67,7 +67,7 @@ def reshape_output(kernel, ker_size=5):
                         reshape_kernel[a][b][c][d] /= sum
     return reshape_kernel
 
-def calcOutput(data, kernel, ker_size=5)
+def calcOutput(data, kernel, ker_size=5):
     pad = (ker_size-1)//2
     ZeroPad = nn.ZeroPad2d(padding=(pad, pad, pad, pad))
     data_pad = ZeroPad(data)
