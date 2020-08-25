@@ -41,40 +41,10 @@ def calcOutput(data, kernel, ker_size=5):
                 for r in range(y):
                     result[o][p][q][r] = torch.sum(scalar_product[o][p][q][r])
     
-    print(result)
+    print(result.size())
     torch.sum(scalar_product, dim=(4,5), keepdim=False)
-    print(scalar_product)
+    print(scalar_product.size())
                     
-    return result
-    
-    
-
-def compute_output(data, kernel, ker_size=5):
-    # data = N*in_channel*x*y
-    # kernel = N*out_channel*x*y, out_channel=in_ch*k**2
-    # transform kernel into N*input_channel*x*y*(k*k), and then do a simple matrix scalar product
-    reshape_data = reshape(data, ker_size)
-    reshape_kernel = reshape_output(kernel, ker_size)
-    
-    N = (list(data.size()))[0]
-    in_ch = (list(data.size()))[1]
-    x = (list(data.size()))[2]
-    y = (list(data.size()))[3]
-    o_ch = (list(kernel.size()))[1] // in_ch
-    scalar_product = torch.mul(reshape_kernel, reshape_data)
-    
-    result = torch.zeros(N, in_ch, x, y)
-    
-    for o in range(N):
-        for p in range(in_ch):
-            for q in range(x):
-                for r in range(y):
-                    sum = 0
-                    for s in range(o_ch):
-                        sum += scalar_product[o][p][q][r][s]
-                    result[o][p][q][r] = sum
-                        
-    #print(result.size())
     return result
     
 class DnCNN(nn.Module):
@@ -134,23 +104,6 @@ if __name__=="__main__":
     kernel = torch.rand(10, 9, 6, 6)
     result = calcOutput(data, kernel, 3)
     #print(result.size())
-    
-'''
-    input = torch.randn(10, 25, 16, 16)
-    reshape_output(input, 5)
-    
-    data = torch.randn(10, 1, 16, 16)
-    reshape(data,5)
-    
-    t = compute_output(data, input, 5)
-    print(t.size())
-    
-    net = DnCNN()
-    shit = torch.randn(10, 1, 8, 8)
-    shithole = net(shit, o_k_size=5)
-    print(shithole.size())
-'''
-
 
 
 
