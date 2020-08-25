@@ -41,9 +41,9 @@ def calcOutput(data, kernel, ker_size=5):
                 for r in range(y):
                     result[o][p][q][r] = torch.sum(scalar_product[o][p][q][r])
     
-    print(result.size())
+    print(result)
     shit = torch.sum(scalar_product, dim=(4,5), keepdim=False)
-    print(shit.size())
+    print(shit)
                     
     return result
     
