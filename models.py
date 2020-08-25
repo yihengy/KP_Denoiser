@@ -8,65 +8,6 @@ Given a batch of images and a HUGE tensor produced by the network,
 compute the output batch of images
 '''
 
-# reshape an N*input_channel*x*y tensor into an N*input_channel*x*y*(k*k) tensor
-def reshape(data,ker_size=5):
-    pad = (ker_size-1)//2
-    ZeroPad = nn.ZeroPad2d(padding=(pad, pad, pad, pad))
-    data_pad = ZeroPad(data)
-    
-    N = (list(data.size()))[0]
-    in_ch = (list(data.size()))[1]
-    x = (list(data.size()))[2]
-    y = (list(data.size()))[3]
-    
-    reshape_data = torch.zeros(N, in_ch, x, y, in_ch*ker_size**2)
-    
-    for i in range(N):
-        for j in range(in_ch):
-            for k in range(x):
-                for l in range(y):
-                    m = 0
-                    for n in range(ker_size):
-                        for o in range(ker_size):
-                            reshape_data[i][j][k][l][m] = data_pad[i][j][k+n][l+o]
-                            m += 1
-    return reshape_data
-
-# Reshape an N*1*x*y tensor into an N*1*x*y*(k*k) tensor
-def reshape1Ch(data, ker_size=5):
-    pad = (ker_size-1)//2
-    ZeroPad = nn.ZeroPad2d(padding=(pad, pad, pad, pad))
-    data_pad = ZeroPad(data)
-    output = data_pad.unfold(2,ker_size,1).unfold(3,ker_size,1)
-    return output
-    
-def reshape_output(kernel, ker_size=5):
-    N = (list(kernel.size()))[0]
-    in_ch = (list(kernel.size()))[1] // (ker_size**2)
-    x = (list(kernel.size()))[2]
-    y = (list(kernel.size()))[3]
-    o_ch = (list(kernel.size()))[1]
-    
-    reshape_kernel = torch.zeros(N, in_ch, x, y, o_ch)
-    for i in range(N):
-        for j in range(in_ch):
-            for k in range(x):
-                for l in range(y):
-                    for m in range(o_ch):
-                        reshape_kernel[i][j][k][l][m] = kernel[i][in_ch*j+m][k][l]
-    # tested so far
-    
-    # Normalization of reshape_kernel = torch.zeros(N, in_ch, x, y, o_ch)
-    for a in range(N):
-        for b in range(in_ch):
-            for c in range(x):
-                for d in range(y):
-                    sum = 0
-                    for e in range(o_ch):
-                        sum += reshape_kernel[a][b][c][d][e]
-                        reshape_kernel[a][b][c][d] /= sum
-    return reshape_kernel
-
 def calcOutput(data, kernel, ker_size=5):
     pad = (ker_size-1)//2
     ZeroPad = nn.ZeroPad2d(padding=(pad, pad, pad, pad))
@@ -99,6 +40,10 @@ def calcOutput(data, kernel, ker_size=5):
             for q in range(x):
                 for r in range(y):
                     result[o][p][q][r] = torch.sum(scalar_product[o][p][q][r])
+    
+    print(result)
+    torch.sum(scalar_product, dim=(4,5), keepdim=False)
+    print(scalar_product)
                     
     return result
     
@@ -185,10 +130,10 @@ if __name__=="__main__":
     test = torch.rand(10,1,5,5).unfold(2,3,1).unfold(3,3,1)
     print(test.size())
     
-    data = torch.rand(10, 1, 16, 16)
-    kernel = torch.rand(10, 25, 16, 16)
-    result = calcOutput(data, kernel, 5)
-    print(result.size())
+    data = torch.rand(10, 1, 6, 6)
+    kernel = torch.rand(10, 9, 6, 6)
+    result = calcOutput(data, kernel, 3)
+    #print(result.size())
     
 '''
     input = torch.randn(10, 25, 16, 16)
