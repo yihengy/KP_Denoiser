@@ -27,7 +27,7 @@ def calcOutput(data, kernel, ker_size=5):
     print(reshape_kernel)
     for a in range(N):
         for b in range(in_ch):
-            reshape_kernel[a][b] = soft_max(reshape_kernel[a][b])
+            soft_max(reshape_kernel[a][b])
     print(reshape_kernel)
     
     scalar_product = torch.mul(reshape_data, reshape_kernel)
