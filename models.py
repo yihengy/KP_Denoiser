@@ -111,8 +111,8 @@ if __name__=="__main__":
     test = torch.rand(10,1,5,5).unfold(2,3,1).unfold(3,3,1)
     print(test.size())
     
-    data = torch.ones(10, 1, 5, 5)
-    kernel = torch.ones(10, 9, 5, 5)
+    data = 2*torch.ones(10, 1, 5, 5)
+    kernel = 2*torch.ones(10, 9, 5, 5)
     result = calcOutput(data, kernel, 3)
     result2 = calcOutput_2(data, kernel, 3)
     #print(result.size())
