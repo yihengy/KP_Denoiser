@@ -48,7 +48,7 @@ def calcOutput_2(data, kernel, ker_size=5):
     ZeroPad = nn.ZeroPad2d(padding=(pad, pad, pad, pad))
     data_pad = ZeroPad(data)
     reshape_data = data_pad.unfold(2,ker_size,1).unfold(3,ker_size,1)
-    soft_max = nn.Softmax(dim=4)
+    soft_max = nn.Softmax(dim=5)
     reshape_kernel = kernel.reshape(N, in_ch, x, y, ker_size, ker_size)
     #print(reshape_kernel)
     reshape_kernel = soft_max(reshape_kernel)
