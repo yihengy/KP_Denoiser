@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as f
 from torch.autograd import Variable
+import numpy as np
 
 '''
 Given a batch of images and a HUGE tensor produced by the network,
@@ -100,23 +101,54 @@ class PatchLoss(nn.Module):
             avg_loss+=max_patch_loss
         avg_loss/=len(output)
         return avg_loss
+        
+class NewPatchLoss(nn.Module):
+    def __init__(self, size_average=None, reduce=None, reduction: str = 'mean') -> None:
+        super(PatchLoss, self).__init__(size_average, reduce, reduction)
+    
+    def forward(self, output, target, patch_size):
+        loss_val=[]
+        N = (list(output.size()))[0]
+        num_ch = (list(output.size()))[1]
+        for i in range(num_ch):
+            avg_loss = 0
+            for j in range(N):
+                output_patches = output[j][i].unfold(0, patch_size, patch_size).unfold(1, patch_size, patch_size)
+                target_patches = target[j][i].unfold(0, patch_size, patch_size).unfold(1, patch_size, patch_size)
+                max_patch_loss = 0
+                for j in range(list(output_patches.size())[0]):
+                    for k in range(list(output_patches.size())[1]):
+                        max_patch_loss = max(max_patch_loss, f.l1_loss(output_patches[j][k], target_patches[j][k]))
+                avg_loss+=max_patch_loss
+            avg_loss /= N
+            loss_val.append(avg_loss)
+        ret_val = np.mean(loss_val)
+        return ret_val
+        
 
 
 if __name__=="__main__":
-    criterion = PatchLoss()
+    criterion_1 = PatchLoss()
+    critefion_2 = NewPatchLoss()
     dtype = torch.FloatTensor
-    x = Variable(torch.randn(100, 100).type(dtype), requires_grad=False)
-    y = Variable(torch.randn(100, 100).type(dtype), requires_grad=False)
-    loss = criterion(x, y, 10)
-    test = torch.rand(10,1,5,5).unfold(2,3,1).unfold(3,3,1)
-    print(test.size())
+    x = torch.randn(5, 100, 100)
+    y = torch.randn(5, 100, 100)
     
+    x_unsqueeze = x.unsqueeze(1)
+    y_unsqueeze = y.unsqueeze(1)
+    
+    loss_1 = criterion_1(x, y, 10)
+    print(loss_1)
+    loss_2 = critefion_2(x_unsqueeze, y_unsqueeze, 10)
+    print(loss_2)
+    
+'''
     data = 2*torch.ones(10, 1, 5, 5)
     kernel = 2*torch.ones(10, 9, 5, 5)
     result = calcOutput(data, kernel, 3)
     result2 = calcOutput_2(data, kernel, 3)
     #print(result.size())
-
+'''
 
 
 '''
