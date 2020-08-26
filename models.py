@@ -109,7 +109,7 @@ class NewPatchLoss(nn.Module):
     def forward(self, output, target, patch_size):
         N = (list(output.size()))[0]
         num_ch = (list(output.size()))[1]
-        loss_val=[]
+        loss_val=0
         for i in range(num_ch):
             avg_loss = 0
             for j in range(N):
@@ -121,14 +121,9 @@ class NewPatchLoss(nn.Module):
                         max_patch_loss = max(max_patch_loss, f.l1_loss(output_patches[j][k], target_patches[j][k]))
                 avg_loss+=max_patch_loss
             avg_loss /= N
-            loss_val.append(avg_loss)
-        ret_val = np.mean(loss_val)
-        set = []
-        set.append(ret_val)
-        return torch.Tensor(set.squeeze(0))
+            loss_val+=avg_loss
+        return loss_val/num_ch
         
-
-
 if __name__=="__main__":
     criterion_1 = PatchLoss()
     criterion_2 = NewPatchLoss()
