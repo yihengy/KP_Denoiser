@@ -104,7 +104,7 @@ class PatchLoss(nn.Module):
         
 class NewPatchLoss(nn.Module):
     def __init__(self, size_average=None, reduce=None, reduction: str = 'mean') -> None:
-        super(PatchLoss, self).__init__(size_average, reduce, reduction)
+        super(NewPatchLoss, self).__init__(size_average, reduce, reduction)
     
     def forward(self, output, target, patch_size):
         loss_val=[]
@@ -129,8 +129,7 @@ class NewPatchLoss(nn.Module):
 
 if __name__=="__main__":
     criterion_1 = PatchLoss()
-    critefion_2 = NewPatchLoss()
-    dtype = torch.FloatTensor
+    criterion_2 = NewPatchLoss()
     x = torch.randn(5, 100, 100)
     y = torch.randn(5, 100, 100)
     
@@ -139,7 +138,7 @@ if __name__=="__main__":
     
     loss_1 = criterion_1(x, y, 10)
     print(loss_1)
-    loss_2 = critefion_2(x_unsqueeze, y_unsqueeze, 10)
+    loss_2 = criterion_2(x_unsqueeze, y_unsqueeze, 10)
     print(loss_2)
     
 '''
