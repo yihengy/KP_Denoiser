@@ -125,7 +125,7 @@ class NewPatchLoss(nn.Module):
         ret_val = np.mean(loss_val)
         set = []
         set.append(ret_val)
-        return torch.Tensor(set)
+        return torch.Tensor(set.squeeze(0))
         
 
 
