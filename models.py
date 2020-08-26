@@ -123,7 +123,9 @@ class NewPatchLoss(nn.Module):
             avg_loss /= N
             loss_val.append(avg_loss)
         ret_val = np.mean(loss_val)
-        return torch.Tensor(ret_val)
+        set = []
+        set.append(ret_val)
+        return torch.Tensor(set)
         
 
 
