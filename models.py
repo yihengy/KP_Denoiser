@@ -141,7 +141,7 @@ if __name__=="__main__":
 
     data = 2*torch.ones(10, 1, 5, 5)
     kernel = 2*torch.ones(10, 9, 5, 5)
-    soft_max = nn.Softmax(dim=3)
+    soft_max = nn.Softmax(dim=1)
     result = soft_max(kernel)
     print(result)
     #print(result.size())
