@@ -107,9 +107,9 @@ class NewPatchLoss(nn.Module):
         super(NewPatchLoss, self).__init__(size_average, reduce, reduction)
     
     def forward(self, output, target, patch_size):
-        loss_val=[]
         N = (list(output.size()))[0]
         num_ch = (list(output.size()))[1]
+        loss_val=[]
         for i in range(num_ch):
             avg_loss = 0
             for j in range(N):
@@ -123,7 +123,7 @@ class NewPatchLoss(nn.Module):
             avg_loss /= N
             loss_val.append(avg_loss)
         ret_val = np.mean(loss_val)
-        return ret_val
+        return tensor(ret_val)
         
 
 
