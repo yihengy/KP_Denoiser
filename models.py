@@ -13,48 +13,16 @@ def calcOutput(data, kernel, ker_size=5):
     pad = (ker_size-1)//2
     ZeroPad = nn.ZeroPad2d(padding=(pad, pad, pad, pad))
     data_pad = ZeroPad(data)
-    
     N = (list(data.size()))[0]
     in_ch = (list(data.size()))[1]
     x = (list(data.size()))[2]
     y = (list(data.size()))[3]
-
     pad = (ker_size-1)//2
     ZeroPad = nn.ZeroPad2d(padding=(pad, pad, pad, pad))
     data_pad = ZeroPad(data)
     reshape_data = data_pad.unfold(2,ker_size,1).unfold(3,ker_size,1)
-    soft_max = nn.Softmax2d()
-    reshape_kernel = kernel.reshape(N, in_ch, x, y, ker_size, ker_size)
-    print(reshape_kernel)
-    for a in range(N):
-        for b in range(in_ch):
-            reshape_kernel[a][b] = soft_max(reshape_kernel[a][b])
-    print(reshape_kernel)
-    
-    scalar_product = torch.mul(reshape_data, reshape_kernel)
-    result = torch.sum(scalar_product, dim=(4,5), keepdim=False)
-    return result
-
-def calcOutput_2(data, kernel, ker_size=5):
-    pad = (ker_size-1)//2
-    ZeroPad = nn.ZeroPad2d(padding=(pad, pad, pad, pad))
-    data_pad = ZeroPad(data)
-    
-    N = (list(data.size()))[0]
-    in_ch = (list(data.size()))[1]
-    x = (list(data.size()))[2]
-    y = (list(data.size()))[3]
-
-    pad = (ker_size-1)//2
-    ZeroPad = nn.ZeroPad2d(padding=(pad, pad, pad, pad))
-    data_pad = ZeroPad(data)
-    reshape_data = data_pad.unfold(2,ker_size,1).unfold(3,ker_size,1)
-    soft_max = nn.Softmax(dim=2)
-    reshape_kernel = kernel.reshape(N, in_ch, x, y, ker_size**2)
-    #print(reshape_kernel)
-    reshape_kernel = soft_max(reshape_kernel).reshape(N, in_ch, x, y, ker_size, ker_size)
-    print(reshape_kernel)
-    
+    soft_max = nn.Softmax(dim=4)
+    reshape_kernel = kernel.reshape(N, in_ch, x, y, ker_size**2).soft_max().reshape(N, in_ch, x, y, ker_size, ker_size)
     scalar_product = torch.mul(reshape_data, reshape_kernel)
     result = torch.sum(scalar_product, dim=(4,5), keepdim=False)
     return result
