@@ -22,7 +22,9 @@ def calcOutput(data, kernel, ker_size=5):
     data_pad = ZeroPad(data)
     reshape_data = data_pad.unfold(2,ker_size,1).unfold(3,ker_size,1)
     soft_max = nn.Softmax(dim=4)
-    reshape_kernel = kernel.reshape(N, in_ch, x, y, ker_size**2).soft_max().reshape(N, in_ch, x, y, ker_size, ker_size)
+    reshape_kernel = kernel.reshape(N, in_ch, x, y, ker_size**2).
+    reshape_kernel = soft_max(reshape_kernel)
+    reshape_kernel = reshape_kernel.reshape(N, in_ch, x, y, ker_size, ker_size)
     scalar_product = torch.mul(reshape_data, reshape_kernel)
     result = torch.sum(scalar_product, dim=(4,5), keepdim=False)
     return result
@@ -105,14 +107,6 @@ if __name__=="__main__":
     print(loss_1)
     loss_2 = criterion_2(x_unsqueeze, y_unsqueeze, 10)
     print(loss_2)
-    
-
-    data = 2*torch.ones(10, 1, 5, 5)
-    kernel = 2*torch.ones(10, 9, 5, 5)
-    soft_max = nn.Softmax(dim=1)
-    result = soft_max(kernel)
-    print(result)
-    #print(result.size())
 
 
 
