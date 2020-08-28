@@ -69,3 +69,5 @@ if __name__=="__main__":
         kernel[0][i] = data[0][0]
     print(kernel)
     
+    t = calcOutput(data, kernel, 3)
+    
