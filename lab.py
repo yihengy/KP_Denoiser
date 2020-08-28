@@ -30,6 +30,11 @@ def calcOutput(data, kernel, ker_size=5):
     return result
     
 if __name__=="__main__":
-    arr = np.array([[[1, 2, 3, 4, 5],[1, 2, 3, 4, 5],[1, 2, 3, 4, 5],[1, 2, 3, 4, 5],[1, 2, 3, 4, 5]]])
-    tensor = torch.from_numpy(arr)
+    arr = np.array([[[[1, 2, 3, 4, 5],[1, 2, 3, 4, 5],[1, 2, 3, 4, 5],[1, 2, 3, 4, 5],[1, 2, 3, 4, 5]]]])
+    data = torch.from_numpy(arr)
     print(tensor.size())
+    kernel = torch.zeros(1,9,5,5)
+    for i in range(9):
+        kernel[0][i] = data[0][0]
+    print(kernel)
+    
