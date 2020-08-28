@@ -10,9 +10,6 @@ compute the output batch of images
 '''
 
 def calcOutput(data, kernel, ker_size=5):
-    pad = (ker_size-1)//2
-    ZeroPad = nn.ZeroPad2d(padding=(pad, pad, pad, pad))
-    data_pad = ZeroPad(data)
     N = (list(data.size()))[0]
     in_ch = (list(data.size()))[1]
     x = (list(data.size()))[2]
@@ -21,7 +18,7 @@ def calcOutput(data, kernel, ker_size=5):
     ZeroPad = nn.ZeroPad2d(padding=(pad, pad, pad, pad))
     data_pad = ZeroPad(data)
     reshape_data = data_pad.unfold(2,ker_size,1).unfold(3,ker_size,1)
-    soft_max = nn.Softmax(dim=3)
+    soft_max = nn.Softmax(dim=4)
     reshape_kernel = kernel.reshape(N, in_ch, x, y, ker_size**2)
     reshape_kernel = soft_max(reshape_kernel)
     reshape_kernel = reshape_kernel.reshape(N, in_ch, x, y, ker_size, ker_size)
