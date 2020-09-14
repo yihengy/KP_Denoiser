@@ -5,7 +5,7 @@ import torch
 import torch.nn as nn
 from torch.autograd import Variable
 from torch.nn import functional as f
-from new_models import DnCNN, PatchLoss
+from new_models import DnCNN, PatchLoss, calcOutput
 from dataset import *
 import glob
 import torch.optim as optim
@@ -22,7 +22,7 @@ parser = argparse.ArgumentParser(description="DnCNN")
 parser.add_argument("--num_of_layers", type=int, default=9, help="Number of total layers")
 parser.add_argument("--sigma", type=float, default=20, help='noise level')
 parser.add_argument("--outf", type=str, default="logs/kp_914", help='path of log files')
-parser.add_argument("--epochs", type=int, default=50, help="Number of training epochs")
+parser.add_argument("--epochs", type=int, default=3, help="Number of training epochs")
 parser.add_argument("--lr", type=float, default=1e-3, help="Initial learning rate")
 parser.add_argument("--trainfile", type=str, default="./data/training/part1.root", help='path of .root file for training')
 parser.add_argument("--valfile", type=str, default="./data/validation/part2.root", help='path of .root file for validation')
@@ -99,7 +99,8 @@ def main():
         val_loss = 0
         for i, data in enumerate(val_train, 0):
             val_truth, val_noise =  data
-            v_kernel = model(val_noise.unsqueeze(1).float().to(args.device))
+            val_noise = val_noise.unsqueeze(1)
+            v_kernel = model(val_noise.float().to(args.device))
             output_loss = criterion(v_kernel.to(args.device), val_noise.to(args.device), val_truth.to(args.device), args.outKerSize, args.patchSize).to(args.device)
             val_loss+=output_loss.item()
         MyScheduler.step(torch.tensor([val_loss]))
@@ -137,7 +138,7 @@ def main():
         noisy_norm = noisy_norm.unsqueeze(1)
         
         norm_kernel = model(noisy_norm.float())
-        output_norm = compute_output(noisy_norm, norm_kernel, args.outKerSize).squeeze(0).squeeze(0).detach().numpy()
+        output_norm = calcOutput(noisy_norm, norm_kernel, args.outKerSize).squeeze(0).squeeze(0).detach().numpy()
         
         #output_norm = model(noisy_norm.float(), args.outKerSize).squeeze(0).squeeze(0).detach().numpy()
         np.savetxt(args.outf+'/output_norm#' + str(image) + '.txt', output_norm)
