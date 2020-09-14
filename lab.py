@@ -25,17 +25,14 @@ def calcOutput(data, kernel, ker_size=3):
     print(reshape_data.size())
     print(reshape_data)
     
-    soft_max_1 = nn.Softmax(dim=3)
-    soft_max_2 = nn.Softmax(dim=4)
+    soft_max = nn.Softmax(dim=4)
     
     reshape_kernel = kernel.reshape(N, in_ch, x, y, ker_size**2)
-    reshape_kernel_1 = soft_max_1(reshape_kernel)
-    reshape_kernel_2 = soft_max_2(reshape_kernel)
-    print("Softmax dim=3:")
-    print(reshape_kernel_1)
+
+    reshape_kernel = soft_max(reshape_kernel)
     
-    print("Softmax dim=4:")
-    print(reshape_kernel_2)
+    print("Softmaxed:")
+    print(reshape_kernel)
     
     exp_kernel = torch.exp(reshape_kernel)
     for i in range(N):
@@ -59,8 +56,10 @@ def calcOutput(data, kernel, ker_size=3):
     print("Sum:")
     print(result)
     return result
-    
+
+'''
 if __name__=="__main__":
+
     arr = np.array([[[[1, 2, 3, 4, 5],[2, 3, 5, 4, 1],[1, 2, 4, 3, 5],[1, 5, 3, 4, 2],[1, 3, 2, 5, 4]]]])
     data = torch.from_numpy(arr)
     print(data.size())
@@ -70,4 +69,8 @@ if __name__=="__main__":
     print(kernel)
     
     t = calcOutput(data, kernel, 3)
-    
+'''
+if __name__=="__main__":
+    data = torch.randn(3,1,5,5)
+    kernel = torchn.randn(3,9,5,5)
+    t = calcOutput(data, kernel, 3)
