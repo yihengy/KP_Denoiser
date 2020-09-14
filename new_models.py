@@ -89,15 +89,3 @@ class NewPatchLoss(nn.Module):
             avg_loss /= N
             loss_val+=avg_loss
         return loss_val/num_ch
-
-
-if __name__=="__main__":
-    
-    
-'''
-NOTE
-Example: input: torch.Size([10, 1, 16, 16]), batchsize=10, 1 channel, image size 16*16
-output: torch.Size([10, 9, 16, 16])
-'''
-    
-
