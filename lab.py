@@ -18,6 +18,7 @@ def calcOutput(data, kernel, ker_size=3):
     pad = (ker_size-1)//2
     ZeroPad = nn.ZeroPad2d(padding=(pad, pad, pad, pad))
     data_pad = ZeroPad(data)
+    # Add padding to the original data
     print("data_pad:") #checked
     print(data_pad)
     reshape_data = data_pad.unfold(2,ker_size,1).unfold(3,ker_size,1)
@@ -28,14 +29,13 @@ def calcOutput(data, kernel, ker_size=3):
     soft_max = nn.Softmax(dim=4)
     
     reshape_kernel = kernel.reshape(N, in_ch, x, y, ker_size**2)
-    
     exp_kernel = reshape_kernel.clone()
-
     reshape_kernel = soft_max(reshape_kernel)
     
-    print("Softmaxed:")
+    print("Softmaxed:") #checked
     print(reshape_kernel)
     
+    # Stupid way of looping to get the softmax result. It should be the same with the previous tensor
     exp_kernel = torch.exp(exp_kernel)
     for i in range(N):
         for j in range(in_ch):
@@ -47,11 +47,10 @@ def calcOutput(data, kernel, ker_size=3):
     print("Hand Calculated:")
     print(exp_kernel)
     
-    
-    exp_kernel = exp_kernel.reshape(N, in_ch, x, y, ker_size, ker_size)
-    print("Reshaped kernel:")
-    print(exp_kernel)
-    scalar_product = torch.mul(reshape_data, exp_kernel)
+    reshape_kernel = reshape_kernel.reshape(N, in_ch, x, y, ker_size, ker_size)
+    print("Reshaped kernel:") #checked
+    print(reshape_kernel)
+    scalar_product = torch.mul(reshape_data, reshape_kernel)
     print("Scalar product:")
     print(scalar_product)
     result = torch.sum(scalar_product, dim=(4,5), keepdim=False)
@@ -59,19 +58,6 @@ def calcOutput(data, kernel, ker_size=3):
     print(result)
     return result
 
-'''
-if __name__=="__main__":
-
-    arr = np.array([[[[1, 2, 3, 4, 5],[2, 3, 5, 4, 1],[1, 2, 4, 3, 5],[1, 5, 3, 4, 2],[1, 3, 2, 5, 4]]]])
-    data = torch.from_numpy(arr)
-    print(data.size())
-    kernel = torch.zeros(1,9,5,5)
-    for i in range(9):
-        kernel[0][i] = data[0][0]
-    print(kernel)
-    
-    t = calcOutput(data, kernel, 3)
-'''
 if __name__=="__main__":
     data = torch.randn(3,1,5,5)
     print("Input data: ")
