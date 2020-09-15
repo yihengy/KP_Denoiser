@@ -72,5 +72,8 @@ if __name__=="__main__":
 '''
 if __name__=="__main__":
     data = torch.randn(3,1,5,5)
+    print("Input data: ")
+    print(data)
+    print("Input kernel: ")
     kernel = torchn.randn(3,9,5,5)
     t = calcOutput(data, kernel, 3)
