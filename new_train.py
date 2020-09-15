@@ -128,9 +128,9 @@ def main():
         np.savetxt(args.outf+'/noisy#' + str(image) + '.txt', noisy)
         
         data_norm = (data-means)/stdevs
-        np.savetxt(args.outf+'/truth_norm#' + str(image) + '.txt', data_norm)
+        #np.savetxt(args.outf+'/truth_norm#' + str(image) + '.txt', data_norm)
         noisy_norm = (noisy-means)/stdevs
-        np.savetxt(args.outf+'/noisy_norm#' + str(image) + '.txt', noisy_norm)
+        #np.savetxt(args.outf+'/noisy_norm#' + str(image) + '.txt', noisy_norm)
         
         data_norm = torch.from_numpy(data_norm)
         noisy_norm = torch.from_numpy(noisy_norm)
@@ -141,14 +141,9 @@ def main():
         output_norm = calcOutput(noisy_norm, norm_kernel, args.outKerSize).squeeze(0).squeeze(0).detach().numpy()
         
         #output_norm = model(noisy_norm.float(), args.outKerSize).squeeze(0).squeeze(0).detach().numpy()
-        np.savetxt(args.outf+'/output_norm#' + str(image) + '.txt', output_norm)
+        #np.savetxt(args.outf+'/output_norm#' + str(image) + '.txt', output_norm)
         output = (output_norm * stdevs) + means
         np.savetxt(args.outf+'/output#' + str(image) + '.txt', output)
-        truth = data.numpy()
-        noisy = noisy.numpy()
-        diff = output-truth
-        noisy_diff = noisy-truth
-        np.savetxt(args.outf+'/diff#' + str(image) + '.txt', diff)
     model.to('cuda')
     
 if __name__ == "__main__":
