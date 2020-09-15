@@ -25,16 +25,18 @@ def calcOutput(data, kernel, ker_size=3):
     print(reshape_data.size())
     print(reshape_data)
     
-    soft_max = nn.Softmax(dim=3)
+    soft_max = nn.Softmax(dim=4)
     
     reshape_kernel = kernel.reshape(N, in_ch, x, y, ker_size**2)
+    
+    exp_kernel = tensor.clone(reshape_kernel)
 
     reshape_kernel = soft_max(reshape_kernel)
     
     print("Softmaxed:")
     print(reshape_kernel)
     
-    exp_kernel = torch.exp(reshape_kernel)
+    exp_kernel = torch.exp(exp_kernel)
     for i in range(N):
         for j in range(in_ch):
             for k in range(x):
