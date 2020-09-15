@@ -29,7 +29,7 @@ def calcOutput(data, kernel, ker_size=3):
     
     reshape_kernel = kernel.reshape(N, in_ch, x, y, ker_size**2)
     
-    exp_kernel = tensor.clone(reshape_kernel)
+    exp_kernel = reshape_kernel.clone()
 
     reshape_kernel = soft_max(reshape_kernel)
     
