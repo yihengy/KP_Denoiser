@@ -18,14 +18,14 @@ def calcOutput(data, kernel, ker_size=3):
     pad = (ker_size-1)//2
     ZeroPad = nn.ZeroPad2d(padding=(pad, pad, pad, pad))
     data_pad = ZeroPad(data)
-    print("data_pad:")
+    print("data_pad:") #checked
     print(data_pad)
     reshape_data = data_pad.unfold(2,ker_size,1).unfold(3,ker_size,1)
-    print("reshape_data (splitting the data into patches):")
+    print("reshape_data (splitting the data into patches):")#checked
     print(reshape_data.size())
     print(reshape_data)
     
-    soft_max = nn.Softmax(dim=4)
+    soft_max = nn.Softmax(dim=3)
     
     reshape_kernel = kernel.reshape(N, in_ch, x, y, ker_size**2)
 
