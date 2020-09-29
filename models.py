@@ -31,7 +31,7 @@ class DnCNN(nn.Module):
         super(DnCNN, self).__init__()
         padding = (ker_size-1)//2
         o_channels = o_k_size**2
-        features = 150
+        features = 100
         
         layers = []
         
