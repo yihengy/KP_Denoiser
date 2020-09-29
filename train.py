@@ -21,11 +21,11 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 parser = argparse.ArgumentParser(description="DnCNN")
 parser.add_argument("--num_of_layers", type=int, default=9, help="Number of total layers")
 parser.add_argument("--sigma", type=float, default=20, help='noise level')
-parser.add_argument("--outf", type=str, default="logs/kp_820", help='path of log files')
+parser.add_argument("--outf", type=str, default="logs/kp_929", help='path of log files')
 parser.add_argument("--epochs", type=int, default=50, help="Number of training epochs")
 parser.add_argument("--lr", type=float, default=1e-3, help="Initial learning rate")
-parser.add_argument("--trainfile", type=str, default="./data/training/part1.root", help='path of .root file for training')
-parser.add_argument("--valfile", type=str, default="./data/validation/part2.root", help='path of .root file for validation')
+parser.add_argument("--trainfile", type=str, default="./test.root", help='path of .root file for training')
+parser.add_argument("--valfile", type=str, default="./test.root", help='path of .root file for validation')
 parser.add_argument("--batchSize", type=int, default=100, help="Training batch size")
 parser.add_argument("--model", type=str, default=None, help="Existing model, if applicable")
 parser.add_argument("--patchSize", type=int, default=20, help="Size of patches to apply in loss function")
@@ -33,8 +33,24 @@ parser.add_argument("--kernelSize", type=int, default=3, help="Training kernel s
 parser.add_argument("--outKerSize", type=int, default=5, help="Output kernel size")
 args = parser.parse_args()
 
+'''
 def init_weights(m):
     if type(m) == nn.Linear:
+        torch.nn.init.xavier_uniform(m.weight)
+        m.bias.data.fill_(0.01)
+    if type(m) == nn.Linear:
+        torch.nn.init.xavier_uniform(m.weight)
+        m.bias.data.fill_(0.01)
+    if type(m) == nn.Linear:
+        torch.nn.init.xavier_uniform(m.weight)
+        m.bias.data.fill_(0.01)
+'''
+def init_weights(m):
+    classname = m.__class__.__name__
+    if classname.find('Linear') != -1:
+        torch.nn.init.xavier_uniform(m.weight)
+        m.bias.data.fill_(0.01)
+    if classname.find('Conv') != -1:
         torch.nn.init.xavier_uniform(m.weight)
         m.bias.data.fill_(0.01)
 
@@ -125,23 +141,23 @@ def main():
         np.savetxt(args.outf+'/noisy#' + str(image) + '.txt', noisy)
         
         data_norm = (data-means)/stdevs
-        np.savetxt(args.outf+'/truth_norm#' + str(image) + '.txt', data_norm)
+        #np.savetxt(args.outf+'/truth_norm#' + str(image) + '.txt', data_norm)
         noisy_norm = (noisy-means)/stdevs
-        np.savetxt(args.outf+'/noisy_norm#' + str(image) + '.txt', noisy_norm)
+        #np.savetxt(args.outf+'/noisy_norm#' + str(image) + '.txt', noisy_norm)
         
         data_norm = torch.from_numpy(data_norm)
         noisy_norm = torch.from_numpy(noisy_norm)
         noisy_norm = noisy_norm.unsqueeze(0)
         noisy_norm = noisy_norm.unsqueeze(1)
         output_norm = model(noisy_norm.float(), args.outKerSize).squeeze(0).squeeze(0).detach().numpy()
-        np.savetxt(args.outf+'/output_norm#' + str(image) + '.txt', output_norm)
+        #np.savetxt(args.outf+'/output_norm#' + str(image) + '.txt', output_norm)
         output = (output_norm * stdevs) + means
         np.savetxt(args.outf+'/output#' + str(image) + '.txt', output)
-        truth = data.numpy()
-        noisy = noisy.numpy()
-        diff = output-truth
-        noisy_diff = noisy-truth
-        np.savetxt(args.outf+'/diff#' + str(image) + '.txt', diff)
+        #truth = data.numpy()
+        #noisy = noisy.numpy()
+        #diff = output-truth
+        #noisy_diff = noisy-truth
+        #np.savetxt(args.outf+'/diff#' + str(image) + '.txt', diff)
     model.to('cuda')
     
 if __name__ == "__main__":

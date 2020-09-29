@@ -27,7 +27,7 @@ def calcOutput(data, kernel, ker_size=5):
     return result
     
 class DnCNN(nn.Module):
-    def __init__(self, channels=1, num_of_layers=9, ker_size=3, o_k_size=5):
+    def __init__(self, channels=1, num_of_layers=9, ker_size=3, o_k_size=21):
         super(DnCNN, self).__init__()
         padding = (ker_size-1)//2
         o_channels = o_k_size**2
@@ -35,14 +35,14 @@ class DnCNN(nn.Module):
         
         layers = []
         
-        layers.append(nn.Conv2d(in_channels=channels, out_channels=features, kernel_size=ker_size, padding=padding, bias=False))
+        layers.append(nn.Conv2d(in_channels=channels, out_channels=features, kernel_size=ker_size, padding=padding, bias=True))
         layers.append(nn.ReLU(inplace=True))
         
         for _ in range(num_of_layers-2):
-            layers.append(nn.Conv2d(in_channels=features, out_channels=features, kernel_size=ker_size, padding=padding, bias=False))
+            layers.append(nn.Conv2d(in_channels=features, out_channels=features, kernel_size=ker_size, padding=padding, bias=True))
             layers.append(nn.ReLU(inplace=True))
             
-        layers.append(nn.Conv2d(in_channels=features, out_channels=o_channels, kernel_size=ker_size, padding=padding, bias=False))
+        layers.append(nn.Conv2d(in_channels=features, out_channels=o_channels, kernel_size=ker_size, padding=padding, bias=True))
         
         self.dncnn = nn.Sequential(*layers)
         
