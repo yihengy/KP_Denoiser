@@ -24,8 +24,8 @@ parser.add_argument("--sigma", type=float, default=20, help='noise level')
 parser.add_argument("--outf", type=str, default="logs/kp_929", help='path of log files')
 parser.add_argument("--epochs", type=int, default=5, help="Number of training epochs")
 parser.add_argument("--lr", type=float, default=1e-3, help="Initial learning rate")
-parser.add_argument("--trainfile", type=str, default="./test.root", help='path of .root file for training')
-parser.add_argument("--valfile", type=str, default="./test.root", help='path of .root file for validation')
+parser.add_argument("--trainfile", type=str, default="./data/training/part1.root", help='path of .root file for training')
+parser.add_argument("--valfile", type=str, default="./data/training/part1.root", help='path of .root file for validation')
 parser.add_argument("--batchSize", type=int, default=100, help="Training batch size")
 parser.add_argument("--model", type=str, default=None, help="Existing model, if applicable")
 parser.add_argument("--patchSize", type=int, default=20, help="Size of patches to apply in loss function")
@@ -127,7 +127,7 @@ def main():
     plt.legend()
     plt.savefig(args.outf + "/lossplt.png")
     
-    branch = get_all_histograms("./test.root")
+    branch = get_all_histograms("./data/training/part1.root")
     model.to('cpu')
     for image in range(10):
     
