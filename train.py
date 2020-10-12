@@ -30,7 +30,7 @@ parser.add_argument("--batchSize", type=int, default=100, help="Training batch s
 parser.add_argument("--model", type=str, default=None, help="Existing model, if applicable")
 parser.add_argument("--patchSize", type=int, default=100, help="Size of patches to apply in loss function")
 parser.add_argument("--kernelSize", type=int, default=3, help="Training kernel size")
-parser.add_argument("--outKerSize", type=int, default=21, help="Output kernel size")
+parser.add_argument("--outKerSize", type=int, default=15, help="Output kernel size")
 args = parser.parse_args()
 
 '''
